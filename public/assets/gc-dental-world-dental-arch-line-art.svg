@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1000" fill="none" aria-hidden="true">
+  <g stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+    <!-- dominant continuous arch -->
+    <path d="M 120 280 C 100 500 270 770 580 792 C 900 814 1090 580 1128 300" stroke-width="1.5"/>
+    <!-- secondary inner contour -->
+    <path d="M 320 660 C 420 745 580 762 700 748 C 845 730 960 630 1005 470" stroke-width="1.25"/>
+    <!-- outer echo fragment -->
+    <path d="M 190 600 C 240 690 350 758 480 782" stroke-width="1.25"/>
+    <!-- drafting accent marks -->
+    <path d="M 106 277 L 134 283 M 1114 297 L 1142 303 M 997 470 L 1013 470 M 1005 462 L 1005 478" stroke-width="1.25"/>
+    <circle cx="650" cy="795" r="10" stroke-width="1.25"/>
+    <path d="M 650 818 L 650 905" stroke-width="1.25" stroke-dasharray="1 11"/>
+  </g>
+</svg>

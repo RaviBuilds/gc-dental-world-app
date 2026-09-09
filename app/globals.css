@@ -1,26 +1,1240 @@
 @import "tailwindcss";
 
+/* ============================================================
+   GC DENTAL WORLD — Design Tokens
+   Canonical source: docs/gc-dental-world-visual-design-system.md
+   ============================================================ */
+
+@theme {
+  /* ---- Color system ---- */
+  --color-gc-ivory: #f5f2ec; /* Warm Ivory — primary background */
+  --color-gc-stone: #eae7e0; /* Warm Stone — secondary background */
+  --color-gc-light: #fbfaf7; /* Light neutral */
+  --color-gc-white: #ffffff;
+  --color-gc-ink: #101a20; /* Deep Ink — primary text */
+  --color-gc-navy: #173b4a; /* Deep Navy — dark sections / CTA */
+  --color-gc-blue: #2879a8; /* GC Blue — brand anchor */
+  --color-gc-blue-soft: #d9e8ed; /* Soft Blue */
+  --color-gc-ice: #f3f8fa; /* Ice */
+  --color-gc-silver: #aeb9be; /* Soft Silver */
+  --color-gc-champagne: #b49a68; /* Champagne — VERY sparing use */
+  --color-gc-star: #fbbc04; /* Google rating stars ONLY */
+  --color-gc-google-blue: #1a73e8; /* Google UI blue — Google Reviews card ONLY */
+
+  /* ---- Typography ---- */
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-dm-serif), Georgia, "Times New Roman", serif;
+
+  /* ---- Motion tokens ---- */
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* ---- Z-index layers ---- */
+  --z-header: 40;
+  --z-floating: 30;
+  --z-menu: 50;
+  --z-lightbox: 60;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --duration-fast: 200ms;
+  --duration-base: 350ms;
+  --duration-slow: 600ms;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+/* ============================================================
+   Base
+   ============================================================ */
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-gc-ivory);
+  color: var(--color-gc-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Anchor offset for sticky header */
+section[id],
+[id^="section-"] {
+  scroll-margin-top: 5.5rem;
+}
+
+::selection {
+  background: var(--color-gc-blue-soft);
+  color: var(--color-gc-ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-gc-blue);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ============================================================
+   Editorial typography (fluid, canonical §6.3)
+   ============================================================ */
+
+.h1-display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  /* Calibrated so the canonical hero headline sets in 4 deliberate lines
+     within the 54% hero column (visual QA pass — was 6.75rem/6.5vw). */
+  font-size: clamp(3.25rem, 5.2vw, 4.75rem);
+  line-height: 1.04;
+  letter-spacing: -0.01em;
+}
+
+.h2-display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2.5rem, 4.5vw, 4.75rem);
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+}
+
+/* Editorial H2 — patient-intent section (visual design system §12.3).
+   Fluid 5vw capped at 64px: calibrated against the 5/12 left column so the
+   preferred two-line rhythm ("What brings you" ≈7.2em ≈461px at 64px) fits
+   the column plus a 2.5rem overhang into the empty column gutter, while the
+   hero H1 (67px minimum on lg) keeps page-wide typographic authority.
+   44px mobile floor keeps the editorial scale on phones. Tight 0.98 leading.
+   The 7.5em measure guarantees exactly two lines at every viewport —
+   "here?" (line ≈9.4em) never fits beside "What brings you", and no
+   3–4 line wrap is possible at any font-metric variance. */
+.h2-display-md {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2.75rem, 5vw, 4rem);
+  line-height: 0.98;
+  letter-spacing: -0.015em;
+  max-width: 7.5em;
+}
+
+@media (min-width: 1024px) {
+  .h2-display-md {
+    /* Editorial overhang into the empty 4rem column gutter — lets the
+       preferred two-line rhythm hold at full scale without touching the
+       route column (which starts a full gutter further right). */
+    margin-right: -2.5rem;
+  }
+}
+
+.h3-display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.5rem, 2.2vw, 2.5rem);
+  line-height: 1.15;
+}
+
+.statement {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2rem, 3.6vw, 4rem);
+  line-height: 1.12;
+}
+
+.lead {
+  font-size: clamp(1.0625rem, 1.3vw, 1.1875rem);
+  line-height: 1.7;
+}
+
+.small-ui {
+  font-size: clamp(0.75rem, 0.85vw, 0.875rem);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+/* Measure constraints (canonical §6.4) */
+.measure {
+  max-width: 65ch;
+}
+.measure-tight {
+  max-width: 24ch;
+}
+.measure-wide {
+  max-width: 34ch;
+}
+
+/* Hidden-scrollbar horizontal rails (mobile case selector) */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ============================================================
+   Layout (canonical §7 — 12-col, 1280px, 5vw gutters)
+   ============================================================ */
+
+.gc-container {
+  width: 100%;
+  max-width: 80rem; /* 1280px */
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 5vw, 5rem);
+}
+
+/* ============================================================
+   Motion
+   ============================================================ */
+
+@keyframes gc-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gc-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.gc-anim-fade-up {
+  animation: gc-fade-up var(--duration-slow) var(--ease-soft) both;
+}
+.gc-anim-fade {
+  animation: gc-fade var(--duration-base) var(--ease-soft) both;
+}
+
+/* Slower crossfade — ghosted theme numeral backdrop (ReviewThemes §07). */
+.gc-anim-fade-slow {
+  animation: gc-fade 700ms var(--ease-soft) both;
+}
+
+/* ============================================================
+   Review theme panel (§07) — staggered crossfade on theme
+   switch. The panel remounts keyed by theme id, so each layer
+   replays its rise; the delays sequence glyph/headline →
+   description → excerpt. Collapsed to the settled state by the
+   global prefers-reduced-motion block above. Transform/opacity
+   only.
+   ============================================================ */
+@keyframes gc-review-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.gc-review-rise-1 {
+  animation: gc-review-rise 500ms var(--ease-soft) 0ms both;
+}
+
+.gc-review-rise-2 {
+  animation: gc-review-rise 500ms var(--ease-soft) 90ms both;
+}
+
+.gc-review-rise-3 {
+  animation: gc-review-rise 500ms var(--ease-soft) 180ms both;
+}
+
+/* ============================================================
+   Google Reviews card — one-shot star pop (transform/opacity
+   only). Gated on prefers-reduced-motion: no-preference so
+   reduced-motion users see the stars settled immediately (the
+   inline per-star animation-delay would otherwise outlive the
+   global 0.01ms collapse).
+   ============================================================ */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes gc-star-pop {
+    from {
+      opacity: 0;
+      transform: scale(0.4);
+    }
+    60% {
+      transform: scale(1.15);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .gc-star-pop {
+    animation: gc-star-pop 450ms var(--ease-soft) both;
+  }
+}
+
+/* Gentle idle float — decorative illustration only. Collapsed to its settled
+   state by the global prefers-reduced-motion block below. */
+@keyframes gc-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+.gc-float {
+  animation: gc-float 6s ease-in-out infinite;
+}
+
+/* Reveal-on-scroll primitive (JS toggles .is-visible) */
+.gc-reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity var(--duration-slow) var(--ease-soft),
+    transform var(--duration-slow) var(--ease-soft);
+}
+.gc-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Topic-switch choreography ("Dental, Explained."):
+   .gc-anim-stagger re-entrances a panel's direct children with a soft rise
+   and an 80ms per-child delay; .gc-wipe reveals imagery with a top-down
+   clip-path wipe. Both re-run on every topic switch because the panel
+   remounts (keyed by topic id). Pure CSS — no-JS readers always get final
+   content, and the global prefers-reduced-motion block below collapses
+   both to their settled state. */
+@keyframes gc-rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.gc-anim-stagger > * {
+  animation: gc-rise-in var(--duration-slow) var(--ease-soft) both;
+}
+.gc-anim-stagger > *:nth-child(2) {
+  animation-delay: 80ms;
+}
+.gc-anim-stagger > *:nth-child(3) {
+  animation-delay: 160ms;
+}
+.gc-anim-stagger > *:nth-child(4) {
+  animation-delay: 240ms;
+}
+.gc-anim-stagger > *:nth-child(5) {
+  animation-delay: 320ms;
+}
+.gc-anim-stagger > *:nth-child(6) {
+  animation-delay: 400ms;
+}
+
+@keyframes gc-wipe-in {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+.gc-wipe {
+  animation: gc-wipe-in 700ms var(--ease-soft) both;
+}
+
+/* Orbiting dashed ring (ToothState figure plate) — slow infinite rotation.
+   Under reduced motion the global block caps it at 1 iteration (≡ 360°,
+   visually the settled circle). */
+@keyframes gc-orbit-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.gc-orbit {
+  animation: gc-orbit-spin 28s linear infinite;
+  transform-origin: 50% 50%;
+}
+
+/* ============================================================
+   Reduced motion (canonical accessibility rule)
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .gc-reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
+/* ============================================================
+   §12.3 Patient-intent section — left editorial canvas
+   ============================================================ */
+
+/* Oversized dental-arch line art behind the left column. The approved
+   /assets/gc-dental-world-dental-arch-line-art.svg is applied as a CSS
+   alpha mask over a GC Blue field: the SVG's currentColor design maps to
+   the brand blue while the component owns opacity. Visual QA (live
+   viewport) showed 0.05 on 1px strokes over Warm Ivory is below the
+   perception threshold — raised to 0.12 so the linework is discoverable
+   in the whitespace while still whisper-quiet. The section's
+   overflow-hidden crops it past the left/bottom boundaries so the crop
+   feels integrated, not boxed. */
+.intent-arch {
+  position: absolute;
+  z-index: 0;
+  top: 22rem;
+  left: -8rem; /* pushed off-canvas — bleeds past the container edge */
+  width: 40rem; /* 640px — reduced scale on tablet */
+  aspect-ratio: 1200 / 1000;
+  background-color: var(--color-gc-blue);
+  opacity: 0.09; /* tablet: softer — sits behind route text */
+  pointer-events: none;
+  -webkit-mask-image: url("/assets/gc-dental-world-dental-arch-line-art.svg");
+  mask-image: url("/assets/gc-dental-world-dental-arch-line-art.svg");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-position: center;
+  mask-position: center;
+  transform-origin: 30% 25%;
+}
+
+@media (min-width: 1024px) {
+  .intent-arch {
+    top: 15rem; /* 240px — arch body fills the whitespace below the intro */
+    left: -8rem; /* -128px — bleeds past the container edge, mostly visible */
+    width: 46rem; /* 736px */
+    opacity: 0.12;
+  }
+}
+
+/* Decorative, not essential — intentionally recomposed away on phones. */
+@media (max-width: 767.98px) {
+  .intent-arch {
+    display: none;
+  }
+}
+
+/* One extremely subtle entrance settle, then fully static. Keyframes carry
+   only the "from" state; the element's base opacity/scale are the settled
+   values, so reduced-motion rendering matches the completed animation. */
+@keyframes intent-arch-in {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .intent-arch {
+    animation: intent-arch-in 800ms var(--ease-soft) 150ms both;
+  }
+}
+
+/* Clinic render video — oversized landscape plinth anchored to the
+   bottom of the left editorial canvas (public/assets/section-video.mp4,
+   1280×720 landscape, 10s, silent loop). Left edge aligns with the
+   editorial grid; width extends into the column gutter toward the
+   route rows. Multiply blend dissolves the render's near-white studio
+   background into the Warm Ivory paper; a slight brightness lift
+   pushes that ~#f6f6f6 field to pure white first so no video panel
+   edge shows. Desktop only: the editorial canvas composition exists
+   on lg+. */
+.intent-media {
+  position: absolute;
+  bottom: 2.5rem; /* lifts the frame to balance the vertical gap below the journey cue */
+  left: 0; /* aligned with the editorial grid — flush with the H2 above, nothing clipped */
+  width: 118%; /* extends into the gutter toward the route column (≈516px → ≈290px tall) */
+  height: auto;
+  transform: scale(1.05); /* gentle subject zoom — outer edges are white studio bg, crop is invisible */
+  mix-blend-mode: multiply;
+  filter: brightness(1.045);
+  opacity: 0.95;
+  pointer-events: none;
+  user-select: none;
+}
+
+@media (max-width: 1023.98px) {
+  .intent-media {
+    display: none;
+  }
+}
+
+/* Same settle language as the arch: one entrance, then static. */
+@keyframes intent-media-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .intent-media {
+    animation: intent-media-in 700ms var(--ease-soft) 250ms both;
+  }
+}
+
+/* ============================================================
+   Hero — "THE TEAM IS THE HERO" (canonical design system §12.1)
+   The authentic team photograph is the ENTIRE hero canvas. On
+   desktop it fills the viewport from top: 0, sliding behind the
+   transparent header — the wall, the clock and the clinic room
+   at the top are the photograph's OWN. No artificial wall,
+   clock or panel layer exists anywhere in the hero.
+   ============================================================ */
+
+/* Lower gradient — ONE continuous full-width layer: transparent → subtle
+   navy tint → deep GC Navy. Stops are weighted toward the bottom so the
+   tint becomes perceptible late (faces stay in the near-natural zone) while
+   the bottom band is dark enough to carry the bottom-left message and the
+   bottom-right trust + CTA. */
+.hero-gradient {
+  height: 62%;
+  background: linear-gradient(
+    to top,
+    rgba(23, 59, 74, 0.97) 0%,
+    rgba(23, 59, 74, 0.93) 12%,
+    rgba(23, 59, 74, 0.8) 26%,
+    rgba(23, 59, 74, 0.55) 44%,
+    rgba(23, 59, 74, 0.28) 62%,
+    rgba(23, 59, 74, 0.09) 80%,
+    rgba(23, 59, 74, 0) 100%
+  );
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  /* Premium editorial masthead scale. Mobile is fluid on the width axis
+     (≈43–50px on phones) — never a fixed utility size — with a slightly
+     calmer leading for face-first readability on small screens. */
+  font-size: clamp(2.625rem, 12vw, 3.625rem);
+  line-height: 0.98;
+  letter-spacing: -0.01em;
+}
+
+/* Mobile framing — widen the visible slice so all six faces stay
+   recognizable on narrow screens (the 3:2 source is nearly as wide as
+   a 16/10 phone box, so almost no horizontal crop occurs). */
+.hero-photo {
+  object-position: 50% 30%;
+}
+
+.hero-support {
+  max-width: 30rem;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+
+@media (min-width: 1024px) {
+  .hero-title {
+    /* Editorial masthead scale, driven by BOTH axes: 5.4vw for width authority,
+       10.5svh so short laptops keep a confident size, floor ≈67px even at
+       640px height. The 4.6875rem (75px) cap is the measured ceiling, not
+       decorative: the copy layer is locked to the site-wide 80rem grid
+       (.gc-container), whose content box is 1120–1136px wide; the bottom-right
+       CTA column needs its natural 448px (single-line floor ≈434px — below
+       that "Book an Appointment" / "Call 070324 44510" wrap to two lines),
+       leaving ≈646px for "not just procedures." (8.606em) → ≈75px.
+       The copy layer's lg gap is 24px (gap-x-6) for the same reason: with the
+       old 40px gap, 646+40+448=1134 overflowed the 1120px content box at
+       ≥1600w and the CTA labels wrapped. Verified broken at 82px+ (CTA
+       wraps); nothing to gain per-breakpoint. */
+    font-size: clamp(4.1875rem, min(5.4vw, 10.5svh), 4.6875rem);
+    line-height: 0.95;
+    letter-spacing: -0.015em;
+  }
+  .hero-support {
+    max-width: 34rem;
+    font-size: 1.125rem;
+  }
+  /* Minimal local-contrast shadow: on short viewports the eyebrow crosses the
+     leftmost doctor's white coat; 90% ivory + a 1px navy shadow keeps it
+     legible without glow. */
+  .hero-eyebrow {
+    text-shadow: 0 1px 2px rgba(23, 59, 74, 0.35);
+  }
+  /* The gradient carries the full-width bottom band (message bottom-left,
+     trust + CTA bottom-right). Faces stay bright above it. */
+  .hero-gradient {
+    height: 60%;
+  }
+
+  /* Full-canvas photograph, top-aligned: the crop trims the photo's lowest
+     band (covered by the gradient anyway) so the clock inside the image
+     lands naturally just below the transparent header. */
+  .hero-photo {
+    object-position: 50% 0%;
+  }
+}
+
+/* Short laptop viewports — support copy tightens slightly; the H1 keeps its
+   confident editorial scale (the 10.5svh term + clamp floor govern size, and
+   stronger upward intrusion into the photograph is acceptable — only faces
+   are off-limits). */
+@media (min-width: 1024px) and (max-height: 720px) {
+  .hero-support {
+    margin-top: 0.5rem;
+    font-size: 1rem;
+  }
+  .hero-gradient {
+    height: 56%;
+  }
+  /* Gated trust metric present: compress spacing (never typography) so the
+     CTA row stays clear of the bottom edge on short laptops. */
+  .hero-trust-label {
+    margin-top: 0.25rem;
+  }
+  .hero-trust-rule {
+    margin-top: 0.375rem;
+  }
+}
+
+/* ---- Gated hero trust metric (heroPatientMetric in data/trustSignals.ts) ----
+   Editorial trust strip: accumulated human impact — NOT a stat card. Renders
+   only when the clinic-confirmed value exists; collapses cleanly when null.
+   Number: DM Serif (existing display face), 30–42px. Label: Manrope
+   (body default), 11px uppercase. Accent: one thin GC Blue rule. No card,
+   no glass, no glow. */
+
+.hero-trust-num {
+  font-size: clamp(1.875rem, min(2.3vw, 4.6svh), 2.625rem);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  font-weight: 400;
+}
+
+.hero-trust-label {
+  margin-top: 0.375rem;
+  font-size: 0.6875rem; /* 11px */
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+}
+
+.hero-trust-rule {
+  margin-top: 0.5rem;
+  width: 2rem;
+  height: 1px;
+  background: var(--color-gc-blue);
+  opacity: 0.65;
+}
+
+/* ---- Hero entrance choreography (total ≈ 850ms, canonical §12.1) ---- */
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hero-settle {
+  from {
+    transform: scale(1.022);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes hero-resolve {
+  from {
+    opacity: 0.4;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes hero-draw {
+  from {
+    stroke-dashoffset: 100;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes hero-dot-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.35;
+  }
+}
+
+@keyframes hero-cue {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(5px);
+    opacity: 1;
+  }
+}
+
+.hero-rise {
+  animation: hero-rise 620ms var(--ease-soft) both;
+}
+.hero-settle {
+  animation: hero-settle 1000ms var(--ease-soft) both;
+}
+.hero-resolve {
+  animation: hero-resolve 900ms var(--ease-soft) 350ms both;
+}
+/* Settled states are the base values — the keyframes carry the "from", so
+   rendering with animations disabled (reduced motion / QA capture) matches
+   the completed animation exactly. */
+.hero-orbit {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 0;
+  animation: hero-draw 1500ms var(--ease-soft) 500ms both;
+}
+.hero-orbit-dot {
+  opacity: 0.35;
+  animation: hero-dot-in 600ms ease-out 1700ms both;
+}
+.hero-cue {
+  animation: hero-cue 2.4s var(--ease-soft) 2.2s 1 both;
+}
+
+/* Scroll exit — the image may subtly scale while the text stays stable.
+   Progressive enhancement only (scroll-driven animations); no JS, and
+   disabled under prefers-reduced-motion. */
+@keyframes hero-exit {
+  to {
+    transform: scale(1.045);
+  }
+}
+
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-media-scroll {
+      transform-origin: 50% 100%;
+      animation: hero-exit linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0vh 90vh;
+    }
+  }
+}
+
+/* ============================================================
+   Explainer media ("Dental, Explained.") — scroll-driven layer
+   parallax. The outline echo, photo and corner accent drift at
+   different rates as the section crosses the viewport, so the
+   composition fans apart on scroll-in and converges on scroll-out.
+   Progressive enhancement only (scroll-driven animations); no JS,
+   and disabled under prefers-reduced-motion. Same pattern as
+   hero-media-scroll above. Keyframes animate transform only.
+   ============================================================ */
+@keyframes explainer-echo-drift {
+  from {
+    transform: translate(24px, 36px);
+  }
+  to {
+    transform: translate(-10px, -24px);
+  }
+}
+@keyframes explainer-photo-drift {
+  from {
+    transform: translateY(26px) scale(1.035);
+  }
+  to {
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes explainer-accent-drift {
+  from {
+    transform: translate(-15px, -25px);
+  }
+  to {
+    transform: translate(20px, 30px);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .explainer-echo {
+      animation: explainer-echo-drift linear both;
+      animation-timeline: view();
+      animation-range: cover 15% cover 85%;
+    }
+    .explainer-photo {
+      animation: explainer-photo-drift linear both;
+      animation-timeline: view();
+      animation-range: cover 15% cover 85%;
+    }
+    .explainer-accent {
+      animation: explainer-accent-drift linear both;
+      animation-timeline: view();
+      animation-range: cover 15% cover 85%;
+    }
+  }
+}
+
+/* ============================================================
+   Explainer extended layer stack (ExplainerMedia) — the layers
+   around the photograph, each with its own drift/rotate rate so
+   the composition fans apart scrolling down and converges
+   scrolling up. Same progressive-enhancement guard as the core
+   trio above (transform-only keyframes, no JS).
+   ============================================================ */
+@keyframes explainer-arch-drift {
+  from {
+    transform: translate(26px, 18px) rotate(2.5deg);
+  }
+  to {
+    transform: translate(-12px, -10px) rotate(-1deg);
+  }
+}
+@keyframes explainer-dots-drift {
+  from {
+    transform: translate(-16px, -12px);
+  }
+  to {
+    transform: translate(10px, 16px);
+  }
+}
+@keyframes explainer-frame-drift {
+  from {
+    transform: translate(12px, -16px) rotate(-3deg);
+  }
+  to {
+    transform: translate(-6px, 10px) rotate(-0.5deg);
+  }
+}
+@keyframes explainer-chip-drift {
+  from {
+    transform: translateY(12px);
+  }
+  to {
+    transform: translateY(-6px);
+  }
+}
+@keyframes explainer-spark-drift {
+  from {
+    transform: translateY(10px) rotate(0deg);
+  }
+  to {
+    transform: translateY(-12px) rotate(25deg);
+  }
+}
+@keyframes explainer-spark-b-drift {
+  from {
+    transform: translateY(-8px) rotate(0deg);
+  }
+  to {
+    transform: translateY(10px) rotate(-25deg);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .explainer-arch {
+      animation: explainer-arch-drift linear both;
+      animation-timeline: view();
+      animation-range: cover 15% cover 85%;
+    }
+    .explainer-dots {
+      animation: explainer-dots-drift linear both;
+      animation-timeline: view();
+      animation-range: cover 15% cover 85%;
+    }
+    .explainer-frame {
+      animation: explainer-frame-drift linear both;
+      animation-timeline: view();
+      animation-range: cover 15% cover 85%;
+    }
+    .explainer-chip {
+      animation: explainer-chip-drift linear both;
+      animation-timeline: view();
+      animation-range: cover 15% cover 85%;
+    }
+    .explainer-spark {
+      animation: explainer-spark-drift linear both;
+      animation-timeline: view();
+      animation-range: cover 15% cover 85%;
+    }
+    .explainer-spark-b {
+      animation: explainer-spark-b-drift linear both;
+      animation-timeline: view();
+      animation-range: cover 15% cover 85%;
+    }
+  }
+}
+
+/* Arch line-art mask — reuses the §12.3 dental-arch asset as an alpha mask
+   over a GC Blue field (same technique as .intent-arch); the component
+   owns size/position/opacity. */
+.gc-arch-mask {
+  background-color: var(--color-gc-blue);
+  -webkit-mask-image: url("/assets/gc-dental-world-dental-arch-line-art.svg");
+  mask-image: url("/assets/gc-dental-world-dental-arch-line-art.svg");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+
+/* Radial tonal wash — soft gc-blue-soft bloom used to break a flat
+   single-tone section fill without extra line-work (ambient layer,
+   "Dental, Explained."). The component owns size/position. */
+.gc-radial-wash {
+  background: radial-gradient(
+    closest-side,
+    var(--color-gc-blue-soft),
+    transparent 72%
+  );
+}
+
+/* ============================================================
+   Explainer ambient layer ("Dental, Explained.") — the
+   section-scale orbital arcs and arch watermark drift slowly as
+   the section crosses the viewport, so the background reads as
+   part of the same fan-apart motion as the photo stack. Same
+   progressive-enhancement guard (scroll-driven animations,
+   no JS, disabled under prefers-reduced-motion; transform-only
+   keyframes — the settled position is the base layout).
+   ============================================================ */
+@keyframes explainer-bg-arcs-drift {
+  from {
+    transform: translate(20px, 24px);
+  }
+  to {
+    transform: translate(-14px, -16px);
+  }
+}
+@keyframes explainer-bg-arch-drift {
+  from {
+    transform: translate(18px, -14px) rotate(1.2deg);
+  }
+  to {
+    transform: translate(-10px, 8px) rotate(-0.5deg);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .explainer-bg-arcs {
+      animation: explainer-bg-arcs-drift linear both;
+      animation-timeline: view();
+      animation-range: cover 10% cover 90%;
+    }
+    .explainer-bg-arch {
+      animation: explainer-bg-arch-drift linear both;
+      animation-timeline: view();
+      animation-range: cover 10% cover 90%;
+    }
+  }
+}
+/* ============================================================
+   Trust panel (§15 Real-World Trust) — the navy module is a
+   DETACHED POSTCARD, not a full-bleed band. Entry: the panel
+   arrives tilted/low and straightens itself as it crosses into
+   the viewport. Exit: it lifts and re-tilts the other way while
+   the copy column counter-drifts (parallax) and the background
+   layers move at their own rates. Two scroll-driven animations
+   share one view() timeline via comma-separated ranges — pure
+   CSS, no JS; static and straight without support, and fully
+   visible under prefers-reduced-motion. Transform-only
+   keyframes; the settled state is the base layout.
+   ============================================================ */
+@keyframes trust-panel-enter {
+  from {
+    transform: translateY(72px) scale(0.965) rotate(-1.6deg);
+  }
+  to {
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+}
+@keyframes trust-panel-exit {
+  from {
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+  to {
+    transform: translateY(-32px) scale(0.98) rotate(0.7deg);
+  }
+}
+@keyframes trust-check-pop {
+  0% {
+    transform: scale(0.4);
+  }
+  70% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes trust-copy-drift {
+  from {
+    transform: translateY(20px);
+  }
+  to {
+    transform: translateY(-14px);
+  }
+}
+@keyframes trust-arch-drift {
+  from {
+    transform: translate(24px, -18px) rotate(1.5deg);
+  }
+  to {
+    transform: translate(-14px, 14px) rotate(-0.8deg);
+  }
+}
+@keyframes trust-sheen-drift {
+  from {
+    transform: translate(-18px, 12px);
+  }
+  to {
+    transform: translate(16px, -10px);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .trust-panel {
+      animation:
+        trust-panel-enter linear both,
+        trust-panel-exit linear both;
+      animation-timeline: view(), view();
+      animation-range: cover 0% cover 40%, cover 60% cover 100%;
+    }
+    .trust-copy {
+      animation: trust-copy-drift linear both;
+      animation-timeline: view();
+      animation-range: cover 10% cover 90%;
+    }
+    .trust-arch {
+      animation: trust-arch-drift linear both;
+      animation-timeline: view();
+      animation-range: cover 10% cover 90%;
+    }
+    .trust-sheen {
+      animation: trust-sheen-drift linear both;
+      animation-timeline: view();
+      animation-range: cover 10% cover 90%;
+    }
+    .trust-check {
+      animation: trust-check-pop linear both;
+      animation-timeline: view();
+      animation-range: cover 25% cover 55%;
+    }
+  }
+}
+
+/* Arch line-art mask, LIGHT tint — same alpha-mask technique as
+   .gc-arch-mask, retuned for the navy panel surface where the blue
+   field would be invisible. */
+.trust-arch {
+  background-color: var(--color-gc-light);
+  -webkit-mask-image: url("/assets/gc-dental-world-dental-arch-line-art.svg");
+  mask-image: url("/assets/gc-dental-world-dental-arch-line-art.svg");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+
+/* Hover tilt (TiltCard) — the cursor drives the vars from JS; both layers
+   ease back to rest on pointerleave. Scroll choreography lives on the OUTER
+   .trust-panel element, so these transforms never fight its animation. */
+.tilt-surface {
+  transform: perspective(1400px) rotateX(var(--tilt-rx, 0deg))
+    rotateY(var(--tilt-ry, 0deg)) rotate(var(--tilt-rz, 0deg));
+  transition: transform 350ms var(--ease-soft);
+  will-change: transform;
+}
+.tilt-shadow {
+  background: rgba(16, 26, 32, 0.5);
+  filter: blur(48px);
+  transform: translate3d(
+      calc(var(--sh-x, 0) * 1px),
+      calc(var(--sh-y, 0) * 1px),
+      0
+    )
+    scale(var(--sh-s, 1));
+  transition: transform 350ms var(--ease-soft);
+}
+
+
+/* ============================================================
+   Editorial highlights (site-wide RichText) — ONE-SHOT entrance
+   fill. While <html> carries .gc-hl-armed (added by a tiny inline
+   script only when JS is available and motion is allowed), every
+   highlight starts undrawn and fills once when the HighlightMotion
+   observer reports it crossing the ~88% viewport line. Without JS,
+   or under prefers-reduced-motion, nothing is armed: highlights
+   render fully painted and static. One-shot by design — once drawn,
+   a highlight never re-animates or re-erases.
+   ============================================================ */
+@media (prefers-reduced-motion: no-preference) {
+  /* Armed initial states — set by the inline boot script + observer */
+  .gc-hl-armed [data-gc-hl="underline"] {
+    background-size: 0% var(--gc-hl-underline-height);
+    transition: background-size 550ms var(--ease-soft);
+  }
+  .gc-hl-armed [data-gc-hl="brush"] .gc-hl-brush-fill {
+    transform: scaleX(0);
+    opacity: 0;
+    transform-origin: left center;
+    transition:
+      transform 550ms var(--ease-soft),
+      opacity 350ms var(--ease-soft);
+  }
+
+  /* Drawn states — HighlightMotion adds .gc-hl-drawn exactly once */
+  .gc-hl-armed [data-gc-hl="underline"].gc-hl-drawn {
+    background-size: 100% var(--gc-hl-underline-height);
+  }
+  .gc-hl-armed [data-gc-hl="brush"].gc-hl-drawn .gc-hl-brush-fill {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+/* Underline highlight — CHAMPAGNE squiggle painted per LINE FRAGMENT via
+   box-decoration-clone: each wrapped line gets its own short squiggle
+   anchored to its own bottom, so the decoration can never stretch across
+   blank space when a phrase wraps. One color everywhere (light + navy):
+   the champagne from the brand palette. */
+.gc-hl-underline {
+  --gc-hl-underline-height: 0.3em;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 8' preserveAspectRatio='none'%3E%3Cpath d='M2 5.5 C 14 1.5 28 6.5 42 4.5 C 56 2.5 70 6.5 84 4.5 C 98 2.5 110 6 118 4' fill='none' stroke='%23b49a68' stroke-width='2.4' stroke-linecap='round' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 100% var(--gc-hl-underline-height);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  padding-bottom: 0.12em;
+}
+
+/* Ghost numeral drift (Experience §03 closing beat) — same
+   slow settle language as the ambient layer. */
+@keyframes gc-ghost-drift {
+  from {
+    transform: translateY(18px);
+  }
+  to {
+    transform: translateY(-10px);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .gc-ghost-numeral {
+      animation: gc-ghost-drift linear both;
+      animation-timeline: view();
+      animation-range: cover 10% cover 80%;
+    }
+  }
+}
+
+/* ============================================================
+   Hero reduced-motion note: the global prefers-reduced-motion
+   block above (0.01ms / 1-iteration override on all elements)
+   fully collapses every hero animation to its settled state.
+   ============================================================ */
+
+/* ============================================================
+   The Clinic (§16) — photo mosaic interaction layer
+   ============================================================ */
+
+/* Mobile photo strip — the three small tiles become a horizontal
+   scroll-snap carousel below md so the section doesn't read as a
+   four-screens-tall stack. Scrollbar hidden; snap points carry the
+   affordance. Desktop (md+) restores the vertical flex column. */
+.gc-clinic-strip {
+  scrollbar-width: none;
+}
+.gc-clinic-strip::-webkit-scrollbar {
+  display: none;
+}
+
+/* Tile caption description — collapsed by default; expands on hover /
+   focus for hover-capable fine-pointer devices only (touch users read
+   the same line inside the lightbox, so nothing is hover-gated away). */
+.clinic-desc {
+  display: block;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition:
+    max-height var(--duration-base) var(--ease-soft),
+    opacity var(--duration-base) var(--ease-soft);
+}
+@media (hover: hover) and (pointer: fine) {
+  .clinic-tile:hover .clinic-desc,
+  .clinic-tile:focus-visible .clinic-desc {
+    max-height: 3rem;
+    opacity: 1;
+  }
+}
+
+/* Lightbox open animation — scrim fades, figure settles from a slight
+   scale-down. The global reduced-motion block collapses this to the
+   settled state. */
+@keyframes gc-lightbox-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+.gc-lightbox-figure {
+  animation: gc-lightbox-in var(--duration-base) var(--ease-soft) both;
+}
+@keyframes gc-lightbox-scrim-in {
+  from {
+    opacity: 0;
+  }
+}
+.gc-lightbox-scrim {
+  animation: gc-lightbox-scrim-in var(--duration-base) var(--ease-soft) both;
+}
+
+
+
+/* Dental icon-pattern fade -- feathers the tiled glyph texture so it is
+   strongest low in the section and dissolves toward the top, keeping display type clean.
+   Static (no motion); Safari needs the -webkit-mask prefix. */
+.gc-pattern-fade {
+  -webkit-mask-image: radial-gradient(
+    ellipse 65% 65% at 35% 72%,
+    #000 30%,
+    transparent 98%
+  );
+  mask-image: radial-gradient(
+    ellipse 65% 65% at 35% 72%,
+    #000 30%,
+    transparent 98%
+  );
 }
