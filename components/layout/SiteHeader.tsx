@@ -42,15 +42,16 @@ export default function SiteHeader() {
           aria-label="GC Dental World — back to top"
         >
           {/* Logo asset is a JPG with a baked-in white background — presented in a white chip
-              until a transparent asset is supplied (NEEDS-CLINIC-CONFIRMATION). */}
-          <span className="inline-flex h-11 items-center rounded-md bg-white px-2.5 shadow-[0_1px_2px_rgba(16,26,32,0.08)]">
+              until a transparent asset is supplied (NEEDS-CLINIC-CONFIRMATION). The asset is
+              margin-cropped so the brand mark renders as large as the chip allows. */}
+          <span className="inline-flex h-12 items-center rounded-md bg-white px-2.5 shadow-[0_1px_2px_rgba(16,26,32,0.08)]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/assets/gc-dental-world-logo.jpg"
               alt="GC Dental World logo"
-              width={88}
-              height={32}
-              className="h-8 w-auto max-w-none"
+              width={1134}
+              height={767}
+              className="h-10 w-auto max-w-none"
             />
           </span>
           <span className="sr-only">GC Dental World</span>

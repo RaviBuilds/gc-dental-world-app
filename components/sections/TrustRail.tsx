@@ -1,4 +1,4 @@
-import Reveal from "@/components/ui/Reveal";
+import RevealGroup from "@/components/ui/RevealGroup";
 import { trustSignals } from "@/data/trustSignals";
 
 /**
@@ -37,8 +37,7 @@ export default function TrustRail() {
       aria-label="GC Dental World in brief"
       className="border-b border-gc-ink/10 bg-gc-ivory"
     >
-      <Reveal>
-        <ul className="gc-container grid grid-cols-2 gap-x-6 gap-y-5 py-7 sm:gap-x-10 sm:py-8 lg:grid-cols-4 lg:gap-x-0 lg:py-9">
+      <RevealGroup as="ul" step={80} className="gc-container grid grid-cols-2 gap-x-6 gap-y-5 py-7 sm:gap-x-10 sm:py-8 lg:grid-cols-4 lg:gap-x-0 lg:py-9">
           {signals.map((signal, i) => (
             <li
               key={signal.label}
@@ -74,8 +73,7 @@ export default function TrustRail() {
               </p>
             </li>
           ))}
-        </ul>
-      </Reveal>
+      </RevealGroup>
     </section>
   );
 }

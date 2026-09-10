@@ -330,6 +330,40 @@ export const clinicSection = {
 
 export const trustSection = {
   whyHeading: "Why patients choose GC Dental World.",
+  /**
+   * §19 introduction — answers "why should a patient trust this clinic?"
+   * before the evidence itself. Every claim traces to canonical material:
+   * the team (§12.13), explanations before decisions (§19 review-derived),
+   * the environment (§16 visual evidence), accumulated reviews (§20) and
+   * the verified Gachibowli location. No superlatives, no invented facts.
+   */
+  whyIntro:
+    "Choosing a dental clinic is about more than treatment alone. It is about the people you meet when you walk in, how your concerns are heard, and how your options are explained before anything begins. It is about the environment where that care happens — and what years of patient reviews say about all of it. And it is about where the clinic actually is, and how easily you can find it. The evidence below is exactly that: what can be shown about GC Dental World, not claimed.",
+  /**
+   * PRIMARY PEOPLE VISUAL — the complete doctors + staff photograph
+   * (asset map: "Team (people)"). The Hero and Clinicians sections use the
+   * OTHER team asset (doctors-team-group-photo.jpg); compositions are
+   * deliberately distinct per visual design system §12.13.
+   */
+  teamImage: {
+    src: "/assets/gc-dental-world-doctors-and-staff-group.jpg",
+    alt: "The doctors and staff of GC Dental World standing together at the clinic entrance",
+    caption: "The people behind the care",
+  },
+  /**
+   * Reputation supporting statement — provenance §20 (verbatim historyCopy,
+   * review-derived: earliest reviews stretch back years; the same names
+   * reappear). Rendered through RichText. Never claim a founding year.
+   */
+  reputationStatement:
+    "Some of the earliest patient reviews of GC Dental World stretch back many years. Long-term patients return, families bring family members, and _the same names reappear_ across different years of reviews. That accumulation — rather than any single claim — is the clinic's history.",
+  /**
+   * NOTE: no location photo here by design — the real Gachibowli building
+   * exterior is the place proof in VisitSection (§23) which follows; this
+   * section stays typographic for the PLACE beat.
+   */
+  /** Quiet closing strip — the evidence arc of the section. */
+  closing: "People → Experience → Environment → Reputation → Place",
   whyPrinciples: [
     {
       title: "A team you can meet",
@@ -356,19 +390,6 @@ export const trustSection = {
       copy: "Khajaguda, Gachibowli — easy to find before your first visit.",
     },
   ] as const,
-  historyHeading: "A practice built through patient relationships.",
-  historyCopy:
-    "Some of the earliest patient reviews of GC Dental World stretch back many years. Long-term patients return, families bring family members, and _the same names reappear_ across different years of reviews. That accumulation — rather than any single claim — is the clinic's history.",
-  timelineHeading: "Trust that has grown over time.",
-  timeline: [
-    { label: "Earlier patients", copy: "First experiences, earliest reviews." },
-    { label: "Returning patients", copy: "Patients coming back over multiple years." },
-    { label: "Family care", copy: "Family members treated across generations." },
-    { label: "Today", copy: "4.8 ★ across 286 Google reviews." },
-  ] as const,
-  googleHeading: "4.8 ★ on Google",
-  googleCopy:
-    "286 patient reviews — organized around what patients actually mention, not a wall of stars.",
 };
 
 export const firstVisit = {

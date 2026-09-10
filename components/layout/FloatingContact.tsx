@@ -1,74 +1,96 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { bookAppointmentHref } from "@/data/navigation";
+
 import { locationData } from "@/data/location";
 
 /**
- * Floating contact — desktop: minimal pill after the hero;
- * mobile: fixed bottom Call / Book action bar with safe-area handling.
+ * Floating WhatsApp CTA — the single persistent contact control.
+ *
+ * Contact-path distribution (intentional, no duplication):
+ *   HEADER:   Call · Book an Appointment (always available)
+ *   FLOATING: WhatsApp only (after the hero)
+ *
+ * The previous floating Call + Book pill / mobile bottom bar duplicated
+ * actions the header already owns continuously, so they are removed.
+ *
+ * Scroll gating: the CTA is HIDDEN while the hero (section#top) dominates
+ * the viewport — it never competes with the hero CTAs — and arrives with
+ * a springy entrance once the hero is mostly scrolled away. An
+ * IntersectionObserver flips ONE boolean at the threshold crossing; there
+ * is no scroll listener and no per-frame React work. The periodic
+ * attention pulse remains pure CSS (a 6s keyframe cycle, fully static
+ * between pulses), so it can never be coupled to scrolling.
+ *
+ * Destination is the VERIFIED clinic WhatsApp (same number as the phone
+ * line) from data/location.ts — never invented here. External-link
+ * attributes follow the house convention (TrustBand's Google-reviews link).
  */
 export default function FloatingContact() {
   const [pastHero, setPastHero] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setPastHero(window.scrollY > window.innerHeight * 0.7);
-    onScroll();
+    const hero = document.getElementById("top");
+
+    // Primary path: observe the hero itself. The CTA appears once the hero
+    // occupies less than ~25% of the viewport — i.e. the banner has been
+    // genuinely scrolled past — and retreats when the user returns to it.
+    if (hero && "IntersectionObserver" in window) {
+      const observer = new IntersectionObserver(
+        ([entry]) => setPastHero(entry.intersectionRatio < 0.25),
+        { threshold: [0, 0.25] },
+      );
+      observer.observe(hero);
+      return () => observer.disconnect();
+    }
+
+    // Fallback (pages without a hero): rAF-gated threshold check that only
+    // ever flips a boolean — no continuous re-renders while scrolling.
+    let ticking = false;
+    const check = () => {
+      ticking = false;
+      setPastHero(window.scrollY > window.innerHeight * 0.6);
+    };
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(check);
+      }
+    };
+    check();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   return (
-    <>
-      {/* Desktop — minimal floating pill */}
-      <div
-        aria-hidden={!pastHero}
-        className={`fixed bottom-6 right-6 z-30 hidden transition-all duration-300 ease-[var(--ease-soft)] lg:block ${
-          pastHero
-            ? "translate-y-0 opacity-100"
-            : "pointer-events-none translate-y-3 opacity-0"
-        }`}
-      >
-        <div className="flex items-center gap-2 rounded-full bg-gc-navy px-2 py-2 shadow-lg">
-          <a
-            href={locationData.phoneHref}
-            className="inline-flex min-h-11 items-center gap-2 rounded-full px-4 text-sm font-semibold text-white transition-colors hover:bg-white/10"
-          >
-            <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
-              <path
-                d="M3.1 1.5h2.6l1.2 3.1-1.6 1.2a10.4 10.4 0 0 0 4.9 4.9l1.2-1.6 3.1 1.2v2.6a1.1 1.1 0 0 1-1.2 1.1A12.9 12.9 0 0 1 2 2.7a1.1 1.1 0 0 1 1.1-1.2Z"
-                fill="currentColor"
-              />
-            </svg>
-            {locationData.phone}
-          </a>
-          <a
-            href={bookAppointmentHref}
-            className="inline-flex min-h-11 items-center rounded-full bg-white px-4 text-sm font-semibold text-gc-navy transition-colors hover:bg-gc-blue-soft"
-          >
-            Book
-          </a>
-        </div>
-      </div>
-
-      {/* Mobile — fixed bottom action bar */}
-      <div
-        className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-2 gap-2 border-t border-gc-ink/10 bg-gc-white p-2.5 shadow-[0_-4px_16px_rgba(16,26,32,0.08)] md:hidden"
-        style={{ paddingBottom: "calc(0.625rem + env(safe-area-inset-bottom))" }}
-      >
-        <a
-          href={locationData.phoneHref}
-          className="flex min-h-12 items-center justify-center rounded-full border border-gc-ink/20 text-sm font-semibold text-gc-ink"
+    <a
+      href={locationData.whatsappHref}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Chat with GC Dental World on WhatsApp"
+      className={`wa-cta${pastHero ? " is-visible" : ""}`}
+    >
+      <span className="wa-body">
+        {/* Authentic WhatsApp glyph — same path as the ContactDialog CTA.
+            Icon-only form: the accessible name comes from the aria-label. */}
+        <svg
+          width="26"
+          height="26"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+          className="wa-icon"
         >
-          Call the Clinic
-        </a>
-        <a
-          href={bookAppointmentHref}
-          className="flex min-h-12 items-center justify-center rounded-full bg-gc-blue text-sm font-semibold text-white"
-        >
-          Book an Appointment
-        </a>
-      </div>
-    </>
+          <path
+            fill="currentColor"
+            d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"
+          />
+        </svg>
+      </span>
+      {/* Desktop micro-tooltip — the CTA is icon-only, so the hover chip
+          carries the full intent. Pointer-only, non-interactive. */}
+      <span className="wa-tip" aria-hidden="true">
+        Chat on WhatsApp
+      </span>
+    </a>
   );
 }

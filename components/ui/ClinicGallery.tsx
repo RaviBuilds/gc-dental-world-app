@@ -130,10 +130,15 @@ export default function ClinicGallery() {
 
   return (
     <>
-      <div className="mt-12 grid grid-cols-1 gap-4 md:mt-16 md:grid-cols-12">
+      {/* Architectural depth — the large tile and the small stack drift at
+          slightly different rates as the section crosses the viewport, so
+          moving through the mosaic feels like moving through the clinic.
+          ≤14px, decorative only (aria-safe: transforms on wrappers of the
+          tiles, never on the images' content meaning). */}
+      <div className="gc-drift-soft mt-12 grid grid-cols-1 gap-4 md:mt-16 md:grid-cols-12">
         {large ? (
           <div className="md:col-span-7">
-            <Reveal className="h-full">
+            <Reveal className="h-full" scale={0.99} distance={12}>
               <Tile
                 img={large}
                 index={images.indexOf(large)}
@@ -145,7 +150,7 @@ export default function ClinicGallery() {
           </div>
         ) : null}
 
-        <div className="gc-clinic-strip flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 md:col-span-5 md:flex-col md:overflow-visible md:pb-0">
+        <div className="gc-drift-soft-b gc-clinic-strip flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 md:col-span-5 md:flex-col md:overflow-visible md:pb-0">
           {small.map((img, i) => {
             const index = images.indexOf(img);
             return (

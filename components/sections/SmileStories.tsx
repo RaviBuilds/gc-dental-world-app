@@ -31,8 +31,9 @@ export default function SmileStories() {
 
   return (
     <section id="smile-stories" aria-labelledby="story-heading" className="relative isolate overflow-hidden bg-gc-navy text-gc-light">
-      {/* Ambient champagne smile-arc — faint, behind the text column */}
-      <svg aria-hidden="true" viewBox="0 0 600 300" fill="none" className="pointer-events-none absolute -left-40 top-16 w-[36rem] text-gc-champagne opacity-[0.07]">
+      {/* Ambient champagne smile-arc — faint, behind the text column; a few
+          px of scroll-depth drift (gc-drift-soft, decorative only) */}
+      <svg aria-hidden="true" viewBox="0 0 600 300" fill="none" className="gc-drift-soft pointer-events-none absolute -left-40 top-16 w-[36rem] text-gc-champagne opacity-[0.07]">
         <path d="M20 60 C 180 260, 420 260, 580 60" stroke="currentColor" strokeWidth="2" />
         <path d="M60 40 C 200 220, 400 220, 540 40" stroke="currentColor" strokeWidth="1" strokeDasharray="3 8" />
       </svg>

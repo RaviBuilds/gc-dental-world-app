@@ -4,6 +4,7 @@ import EditorialRow from "@/components/ui/EditorialRow";
 import ExperienceMedia from "@/components/ui/ExperienceMedia";
 import RichText from "@/components/ui/RichText";
 import Reveal from "@/components/ui/Reveal";
+import RevealGroup from "@/components/ui/RevealGroup";
 import TiltCard from "@/components/ui/TiltCard";
 import ReviewThemes from "@/components/interactive/ReviewThemes";
 import { experience } from "@/data/home";
@@ -71,7 +72,8 @@ export default function ExperienceSection() {
 
       {/* ── Content (above ambient layer) ── */}
       <div className="relative z-10">
-        <Reveal>
+        {/* Editorial sequencing — label → H2 → two-beat intro */}
+        <RevealGroup step={90}>
           <SectionLabel>The GC Dental World experience</SectionLabel>
           <h2 id="experience-heading" className="h2-display measure-wide text-gc-ink">
             {experience.heading}
@@ -84,7 +86,7 @@ export default function ExperienceSection() {
               <RichText>{experience.intro[1]}</RichText>
             </p>
           </div>
-        </Reveal>
+        </RevealGroup>
 
         <div className="mt-14 flex flex-col gap-14 md:mt-16 md:gap-20">
           <Reveal>

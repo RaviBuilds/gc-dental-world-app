@@ -3,6 +3,7 @@ import SectionLabel from "@/components/ui/SectionLabel";
 import EditorialRow from "@/components/ui/EditorialRow";
 import ExperienceMedia from "@/components/ui/ExperienceMedia";
 import Reveal from "@/components/ui/Reveal";
+import RevealGroup from "@/components/ui/RevealGroup";
 import ArrowLink from "@/components/ui/ArrowLink";
 import {
   cliniciansIntro,
@@ -61,15 +62,19 @@ export default function CliniciansSection() {
 
       {/* ── Content (above ambient layer) ── */}
       <div className="relative z-10">
-        <SectionLabel>The clinicians</SectionLabel>
-        <Reveal>
+        {/* Editorial sequencing — label → heading → intro → trust chips.
+            Respectful, structured: credentials arrive after the people. */}
+        <RevealGroup step={90}>
+          <div>
+            <SectionLabel>The clinicians</SectionLabel>
+          </div>
           <h2 id="doctors-heading" className="h2-display measure-wide text-gc-ink">
             {cliniciansIntro.heading}
           </h2>
           <p className="lead measure mt-4 text-gc-ink/70">
             <RichText>{cliniciansIntro.intro}</RichText>
           </p>
-        </Reveal>
+        </RevealGroup>
 
         {/* Verifiable, team-level trust chips */}
         <Reveal>

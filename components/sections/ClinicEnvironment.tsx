@@ -1,6 +1,7 @@
 import Section from "@/components/ui/Section";
 import SectionLabel from "@/components/ui/SectionLabel";
 import Reveal from "@/components/ui/Reveal";
+import RevealGroup from "@/components/ui/RevealGroup";
 import RichText from "@/components/ui/RichText";
 import ArrowLink from "@/components/ui/ArrowLink";
 import ClinicGallery from "@/components/ui/ClinicGallery";
@@ -57,8 +58,11 @@ export default function ClinicEnvironment() {
 
       {/* ── Content (above ambient layer) ── */}
       <div className="relative z-10">
-        <Reveal>
-          <SectionLabel>The clinic</SectionLabel>
+        {/* Editorial sequencing — label → heading → intro → local signal */}
+        <RevealGroup step={90}>
+          <div>
+            <SectionLabel>The clinic</SectionLabel>
+          </div>
           <h2 id="clinic-heading" className="h2-display measure-wide text-gc-ink">
             {clinicSection.heading}
           </h2>
@@ -76,7 +80,7 @@ export default function ClinicEnvironment() {
               {clinicSection.landmark}.
             </span>
           </div>
-        </Reveal>
+        </RevealGroup>
 
         <ClinicGallery />
 

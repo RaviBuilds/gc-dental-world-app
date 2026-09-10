@@ -1,4 +1,4 @@
-import { primaryNav } from "@/data/navigation";
+import { primaryNav, secondaryNav } from "@/data/navigation";
 import { locationData } from "@/data/location";
 
 /** Footer — utility, contact, NAP, navigation (content strategy §26). */
@@ -8,14 +8,14 @@ export default function SiteFooter() {
       <div className="gc-container py-16 pb-28 md:py-20 md:pb-16">
         <div className="grid gap-12 md:grid-cols-12">
           <div className="md:col-span-5">
-            <span className="inline-flex h-14 items-center rounded-md bg-white px-3">
+            <span className="inline-flex h-16 items-center rounded-md bg-white px-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/assets/gc-dental-world-logo.jpg"
                 alt="GC Dental World logo"
-                width={112}
-                height={44}
-                className="h-10 w-auto"
+                width={1134}
+                height={767}
+                className="h-12 w-auto"
               />
             </span>
             <p className="measure mt-6 text-gc-light/70">
@@ -27,7 +27,7 @@ export default function SiteFooter() {
           <nav aria-label="Footer" className="md:col-span-4">
             <h2 className="small-ui mb-5 text-gc-blue-soft">Explore</h2>
             <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              {primaryNav.map((item) => (
+              {[...primaryNav, ...secondaryNav].map((item) => (
                 <li key={item.href}>
                   <a
                     href={item.href}

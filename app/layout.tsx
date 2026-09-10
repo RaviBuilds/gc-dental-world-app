@@ -26,16 +26,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
     >
       <body className="flex min-h-full flex-col">
-        {/* Highlight entrance-fill boot — runs before first paint so armed
-            highlights start undrawn with no flash. Arms only when JS is
-            running and motion is allowed; HighlightMotion (page-level)
-            owns the observer and de-arms for reduced-motion users. The
-            class on <html> is set outside React, hence the
-            suppressHydrationWarning above. */}
+        {/* Motion boot — runs before first paint so no armed initial state
+            can flash. Arms two systems only when JS is running and motion is
+            allowed: .gc-hl-armed (highlight entrance fills, HighlightMotion
+            owns the observer) and .gc-motion-armed (reveal/line-draw initial
+            states — without this class content renders fully visible, so
+            no-JS readers and crawlers always get the complete page). */}
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&'IntersectionObserver' in window){document.documentElement.classList.add('gc-hl-armed')}}catch(e){}",
+              "try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&'IntersectionObserver' in window){document.documentElement.classList.add('gc-hl-armed','gc-motion-armed')}}catch(e){}",
           }}
         />
         {/* Dentist entity — verified fields only (see lib/seo.ts) */}

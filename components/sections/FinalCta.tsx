@@ -1,16 +1,18 @@
 import Section from "@/components/ui/Section";
-import Reveal from "@/components/ui/Reveal";
+import RevealGroup from "@/components/ui/RevealGroup";
 import Divider from "@/components/ui/Divider";
 import RichText from "@/components/ui/RichText";
 import Button from "@/components/ui/Button";
 import { finalCta } from "@/data/home";
 
-/** Final conversion section (content strategy §25) — consultative close. */
+/** Final conversion section (content strategy §25) — consultative close.
+ *  Confident, restrained arrival: headline → supporting copy → primary CTA →
+ *  secondary CTA → brand divider. No zoom, no pulse, no glow. */
 export default function FinalCta() {
   return (
     <Section id="contact" tone="navy" labelledBy="cta-heading" className="py-0!">
       <div className="flex flex-col items-center py-24 text-center md:py-32">
-        <Reveal>
+        <RevealGroup step={110} className="flex flex-col items-center">
           <h2 id="cta-heading" className="h2-display mx-auto max-w-3xl text-gc-light">
             {finalCta.heading}
           </h2>
@@ -32,7 +34,7 @@ export default function FinalCta() {
             </Button>
           </div>
           <Divider tone="light" className="mx-auto mt-16" />
-        </Reveal>
+        </RevealGroup>
       </div>
     </Section>
   );

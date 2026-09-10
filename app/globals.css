@@ -33,6 +33,7 @@
   --z-floating: 30;
   --z-menu: 50;
   --z-lightbox: 60;
+  --z-dialog: 70;
 }
 
 :root {
@@ -289,17 +290,81 @@ section[id],
   animation: gc-float 6s ease-in-out infinite;
 }
 
-/* Reveal-on-scroll primitive (JS toggles .is-visible) */
-.gc-reveal {
-  opacity: 0;
-  transform: translateY(14px);
-  transition:
-    opacity var(--duration-slow) var(--ease-soft),
-    transform var(--duration-slow) var(--ease-soft);
-}
-.gc-reveal.is-visible {
-  opacity: 1;
-  transform: translateY(0);
+/* ============================================================
+   Reveal-on-scroll primitives (JS toggles .is-visible once)
+
+   Hidden initial states are ARMED: <html> carries .gc-motion-armed
+   only when the inline boot script confirms JS + IntersectionObserver
+   + motion allowed. Without JS, and under prefers-reduced-motion,
+   nothing is ever hidden — content renders fully visible and static.
+   Transform/opacity only; the visible state is the settled layout.
+   ============================================================ */
+@media (prefers-reduced-motion: no-preference) {
+  /* Single-element reveal (Reveal.tsx). --gc-reveal-y / --gc-reveal-s let
+      sections vary the rise distance and initial scale (image plates settle
+      from a slight zoom) without new classes. */
+  .gc-motion-armed .gc-reveal {
+    opacity: 0;
+    transform: translateY(var(--gc-reveal-y, 14px)) scale(var(--gc-reveal-s, 1));
+    transition:
+      opacity var(--duration-slow) var(--ease-soft),
+      transform var(--duration-slow) var(--ease-soft);
+  }
+  .gc-motion-armed .gc-reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* RevealGroup (RevealGroup.tsx) — editorial sequencing. The observer
+      lives on the GROUP; CSS staggers its direct children so a section
+      enters as eyebrow → heading → supporting copy → secondary elements.
+      One observer per group, no per-child JS. --gc-stagger-step is set by
+      the component; capped at 8 children. */
+  .gc-motion-armed .gc-reveal-group > * {
+    opacity: 0;
+    transform: translateY(10px);
+    transition:
+      opacity var(--duration-slow) var(--ease-soft),
+      transform var(--duration-slow) var(--ease-soft);
+  }
+  .gc-motion-armed .gc-reveal-group > *:nth-child(2) {
+    transition-delay: var(--gc-stagger-step, 90ms);
+  }
+  .gc-motion-armed .gc-reveal-group > *:nth-child(3) {
+    transition-delay: calc(2 * var(--gc-stagger-step, 90ms));
+  }
+  .gc-motion-armed .gc-reveal-group > *:nth-child(4) {
+    transition-delay: calc(3 * var(--gc-stagger-step, 90ms));
+  }
+  .gc-motion-armed .gc-reveal-group > *:nth-child(5) {
+    transition-delay: calc(4 * var(--gc-stagger-step, 90ms));
+  }
+  .gc-motion-armed .gc-reveal-group > *:nth-child(6) {
+    transition-delay: calc(5 * var(--gc-stagger-step, 90ms));
+  }
+  .gc-motion-armed .gc-reveal-group > *:nth-child(7) {
+    transition-delay: calc(6 * var(--gc-stagger-step, 90ms));
+  }
+  .gc-motion-armed .gc-reveal-group > *:nth-child(8) {
+    transition-delay: calc(7 * var(--gc-stagger-step, 90ms));
+  }
+  .gc-motion-armed .gc-reveal-group.is-visible > * {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* One-shot hairline draw — divider rules settle in from the left once
+      their Reveal / RevealGroup ancestor becomes visible. Use only on
+      decorative rules inside a reveal; without JS or under reduced motion
+      the rule simply renders drawn. */
+  .gc-motion-armed .gc-line-draw {
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 700ms var(--ease-soft) 180ms;
+  }
+  .gc-motion-armed :is(.gc-reveal.is-visible, .gc-reveal-group.is-visible) .gc-line-draw {
+    transform: scaleX(1);
+  }
 }
 
 /* Topic-switch choreography ("Dental, Explained."):
@@ -447,6 +512,19 @@ section[id],
   .intent-arch {
     animation: intent-arch-in 800ms var(--ease-soft) 150ms both;
   }
+  /* Scroll-depth participation — the arch drifts a few px as the section
+     crosses the viewport (gc-drift-soft family), composited as a second
+     animation so the entrance settle still plays on the document timeline.
+     view()-linked only where scroll-driven timelines are supported. */
+  @supports (animation-timeline: view()) {
+    .intent-arch {
+      animation:
+        intent-arch-in 800ms var(--ease-soft) 150ms both,
+        gc-drift-soft linear both;
+      animation-timeline: auto, view();
+      animation-range: normal, cover 10% cover 90%;
+    }
+  }
 }
 
 /* Clinic render video — oversized landscape plinth anchored to the
@@ -464,7 +542,9 @@ section[id],
   left: 0; /* aligned with the editorial grid — flush with the H2 above, nothing clipped */
   width: 118%; /* extends into the gutter toward the route column (≈516px → ≈290px tall) */
   height: auto;
-  transform: scale(1.05); /* gentle subject zoom — outer edges are white studio bg, crop is invisible */
+  transform: scale(
+    1.05
+  ); /* gentle subject zoom — outer edges are white studio bg, crop is invisible */
   mix-blend-mode: multiply;
   filter: brightness(1.045);
   opacity: 0.95;
@@ -1026,7 +1106,9 @@ section[id],
         trust-panel-enter linear both,
         trust-panel-exit linear both;
       animation-timeline: view(), view();
-      animation-range: cover 0% cover 40%, cover 60% cover 100%;
+      animation-range:
+        cover 0% cover 40%,
+        cover 60% cover 100%;
     }
     .trust-copy {
       animation: trust-copy-drift linear both;
@@ -1086,7 +1168,6 @@ section[id],
     scale(var(--sh-s, 1));
   transition: transform 350ms var(--ease-soft);
 }
-
 
 /* ============================================================
    Editorial highlights (site-wide RichText) — ONE-SHOT entrance
@@ -1221,8 +1302,6 @@ section[id],
   animation: gc-lightbox-scrim-in var(--duration-base) var(--ease-soft) both;
 }
 
-
-
 /* Dental icon-pattern fade -- feathers the tiled glyph texture so it is
    strongest low in the section and dissolves toward the top, keeping display type clean.
    Static (no motion); Safari needs the -webkit-mask prefix. */
@@ -1237,4 +1316,443 @@ section[id],
     #000 30%,
     transparent 98%
   );
+}
+
+/* ============================================================
+   §18 Treatment directory — "Clinical Atlas" presentation
+   ============================================================ */
+
+/* The 16:9 clinical-atlas render sits inside a slightly taller 4:3
+   editorial plate. object-fit: contain keeps the complete dental arch
+   and its orbit detailing visible at every breakpoint — the letterbox
+   areas are invisible because the plate sits directly on the section's
+   Warm Ivory ground. */
+.atlas-frame {
+  aspect-ratio: 4 / 3;
+}
+
+/* Desktop refinement: a slightly taller plate on lg consumes more of the
+   left column's whitespace below the annotation (the letterbox stays
+   invisible on the Warm Ivory ground). */
+@media (min-width: 1024px) {
+  .atlas-frame {
+    aspect-ratio: 7 / 6;
+  }
+}
+
+/* ============================================================
+   Scroll progress — 1px GC Blue line at the very top of the page.
+   Pure CSS scroll-linked animation (no JS, no scroll listeners);
+   browsers without scroll-driven-animation support and reduced-motion
+   users get nothing at all — the bar stays at scaleX(0) and never
+   renders as a visible element. Sits above the sticky header (z-40)
+   but is 1px tall and pointer-events-none, so it never interferes
+   with the transparent hero header.
+   ============================================================ */
+.gc-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--color-gc-blue);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  z-index: 50;
+  pointer-events: none;
+}
+
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .gc-progress-bar {
+      animation: gc-progress-fill linear both;
+      animation-duration: auto;
+      animation-timeline: scroll(root);
+    }
+  }
+}
+
+@keyframes gc-progress-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* ============================================================
+   Reusable gentle scroll-depth drift for decorative layers —
+   background arcs, arch watermarks, ghost imagery, editorial SVG
+   fragments. ≤14px total travel, transform-only, view()-linked;
+   same progressive-enhancement guard as the explainer drift family
+   (static without support, disabled under prefers-reduced-motion).
+   Content never uses these classes — decoration only.
+   ============================================================ */
+@keyframes gc-drift-soft {
+  from {
+    transform: translate(10px, 14px);
+  }
+  to {
+    transform: translate(-8px, -10px);
+  }
+}
+@keyframes gc-drift-soft-b {
+  from {
+    transform: translate(-12px, -8px);
+  }
+  to {
+    transform: translate(8px, 10px);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .gc-drift-soft {
+      animation: gc-drift-soft linear both;
+      animation-timeline: view();
+      animation-range: cover 10% cover 90%;
+    }
+    .gc-drift-soft-b {
+      animation: gc-drift-soft-b linear both;
+      animation-timeline: view();
+      animation-range: cover 10% cover 90%;
+    }
+  }
+}
+
+/* ============================================================
+   Floating WhatsApp CTA — the single persistent contact control.
+   HEADER owns Call + Book; FLOATING owns WhatsApp (no duplication).
+
+   Identity: authentic WhatsApp green (the one intentional exception
+   to the GC palette — users must recognize the channel instantly).
+   Sizing, radius restraint, shadow softness and typography stay in
+   the house system.
+
+   Attention pulse: ONE brief beat per ~6s cycle, 100% CSS. The
+   keyframes hold identical values through the idle ~82% of the
+   cycle, so the button is fully static between pulses — never an
+   infinite pulse, never scroll-coupled, no JS. Hover/focus/press
+   cancel the animation cleanly (resting state is the base state).
+   ============================================================ */
+.wa-cta {
+  /* WhatsApp brand tokens — the only greens introduced, scoped here */
+  --wa-green: #25d366;
+  --wa-green-hover: #1fbf5a;
+  --wa-green-deep: #128c7e;
+
+  position: fixed;
+  right: 1rem;
+  bottom: calc(1rem + env(safe-area-inset-bottom));
+  z-index: var(--z-floating); /* same layer the old floating contact used */
+  display: inline-block;
+  will-change: transform, opacity;
+
+  /* Hidden state (over the hero): scaled down, sunk, untouchable.
+     `visibility` also removes it from tab order and the a11y tree. */
+  opacity: 0;
+  transform: translateY(18px) scale(0.5);
+  visibility: hidden;
+  pointer-events: none;
+
+  /* Exit curve — quick, quiet settle away (ease-in). */
+  transition:
+    opacity 240ms cubic-bezier(0.4, 0, 1, 1),
+    transform 300ms cubic-bezier(0.4, 0, 1, 1),
+    visibility 0s linear 300ms;
+}
+
+/* Visible state (hero scrolled past): springy arrival — rises in with a
+   soft overshoot and settles. The >1 bezier midpoint gives the bounce-free
+   "expensive" pop; opacity resolves early so it never looks like a flash. */
+.wa-cta.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  visibility: visible;
+  pointer-events: auto;
+  transition:
+    opacity 280ms var(--ease-soft),
+    transform 620ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    visibility 0s;
+}
+
+.wa-body {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px; /* 56px round FAB — well above the 44px touch floor */
+  border-radius: 9999px;
+  background: var(--wa-green);
+  color: #fff;
+  box-shadow:
+    0 12px 28px -10px rgba(18, 140, 126, 0.6),
+    0 3px 8px rgba(16, 26, 32, 0.15);
+  transition:
+    background-color var(--duration-fast) var(--ease-soft),
+    transform 180ms var(--ease-soft);
+}
+
+.wa-icon {
+  display: block;
+  transition: transform var(--duration-fast) var(--ease-soft);
+}
+
+/* Soft green halo — expands + fades once per cycle, invisible at rest */
+.wa-body::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 3px solid rgba(37, 211, 102, 0.7);
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (min-width: 640px) {
+  .wa-cta {
+    right: 1.5rem;
+    bottom: 1.5rem;
+  }
+}
+
+/* Hover — deeper green, slight lift, 1px icon nudge. The lift lives on
+   .wa-body (fast, snappy) so the anchor's entry/exit transform is never
+   fought. The attention pulse is suppressed while hovered (resting = base
+   state). No glow, no bounce. */
+@media (hover: hover) and (pointer: fine) {
+  .wa-cta:hover .wa-body {
+    transform: translateY(-1px);
+  }
+  .wa-cta:hover .wa-body {
+    animation: none;
+    background: var(--wa-green-hover);
+    box-shadow:
+      0 14px 28px -10px rgba(18, 140, 126, 0.6),
+      0 3px 8px rgba(16, 26, 32, 0.14);
+  }
+  .wa-cta:hover .wa-icon {
+    transform: translateX(1px);
+  }
+}
+
+/* Press — tiny settle; the pulse animation is cancelled so the scale applies */
+.wa-cta:active .wa-body {
+  animation: none;
+  transform: scale(0.97);
+}
+
+/* Focus / hover cancel the attention pulse (resting = base state, so the
+   snap from ≤1.035 back to 1.0 is imperceptible) */
+.wa-cta:focus-visible .wa-body {
+  animation: none;
+}
+
+/* Desktop micro-tooltip — "Chat on WhatsApp" (label itself is concise) */
+.wa-tip {
+  display: none;
+}
+@media (min-width: 768px) and (hover: hover) and (pointer: fine) {
+  .wa-tip {
+    display: block;
+    position: absolute;
+    right: calc(100% + 10px);
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.375rem;
+    background: var(--color-gc-navy);
+    color: var(--color-gc-light);
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--duration-fast) var(--ease-soft);
+  }
+  .wa-cta:hover .wa-tip,
+  .wa-cta:focus-visible .wa-tip {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .wa-body {
+    /* 6s cycle: the beat occupies the first ~960ms (0–16%), then the keyframes
+       hold the resting values — visually static until the next cycle. */
+    animation: wa-attention 6s var(--ease-soft) infinite;
+  }
+  .wa-body::after {
+    animation: wa-ring 6s var(--ease-soft) infinite;
+  }
+}
+
+@keyframes wa-attention {
+  0% {
+    transform: scale(1);
+    box-shadow:
+      0 12px 28px -10px rgba(18, 140, 126, 0.6),
+      0 3px 8px rgba(16, 26, 32, 0.15);
+  }
+  7% {
+    transform: scale(1.09);
+    box-shadow:
+      0 18px 38px -10px rgba(18, 140, 126, 0.7),
+      0 4px 12px rgba(16, 26, 32, 0.18);
+  }
+  16% {
+    transform: scale(1);
+    box-shadow:
+      0 12px 28px -10px rgba(18, 140, 126, 0.6),
+      0 3px 8px rgba(16, 26, 32, 0.15);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow:
+      0 12px 28px -10px rgba(18, 140, 126, 0.6),
+      0 3px 8px rgba(16, 26, 32, 0.15);
+  }
+}
+
+@keyframes wa-ring {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  5% {
+    opacity: 0.75;
+  }
+  16% {
+    opacity: 0;
+    transform: scale(1.45);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.45);
+  }
+}
+
+/* Reduced motion: no pulse, no halo, no hover movement — and the scroll
+   gate collapses to a plain, instant opacity toggle (no scale/translate
+   travel). Functionality, focus state and visibility gating preserved. */
+@media (prefers-reduced-motion: reduce) {
+  .wa-cta,
+  .wa-body,
+  .wa-body::after {
+    animation: none !important;
+  }
+  .wa-cta {
+    transform: none;
+    transition:
+      opacity 200ms linear,
+      visibility 0s;
+  }
+  .wa-cta.is-visible {
+    transform: none;
+  }
+  .wa-cta:hover .wa-body {
+    transform: none;
+  }
+}
+.atlas-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  pointer-events: none;
+  user-select: none;
+  /* Background blend (same technique as .intent-media, tuned to the
+     sampled source field #F5F0EB): the video's own ivory background is
+     lifted to paper-white, then multiply-blended into the #F5F2EC
+     section ground — the frame boundary dissolves and the atlas reads
+     as printed on the page itself. The lift is imperceptible on the
+     artwork and never brighter than the paper. */
+  filter: brightness(1.085);
+  mix-blend-mode: multiply;
+}
+
+/* Row ↔ atlas relationship: hovering or keyboard-focusing any care row
+   wakes a whisper-level blue bloom behind the plate. CSS-only via
+   :has() — browsers without support simply never show it (the section
+   is designed to be elegant without it), and the global reduced-motion
+   block collapses the transition for reduce users. */
+.atlas-halo {
+  position: absolute;
+  inset: -10% -12%;
+  background: radial-gradient(
+    closest-side,
+    var(--color-gc-blue-soft),
+    transparent 72%
+  );
+  opacity: 0;
+  transition: opacity 400ms var(--ease-soft);
+  pointer-events: none;
+}
+.care-atlas:has(.treatment-row:hover) .atlas-halo,
+.care-atlas:has(.treatment-row:focus-within) .atlas-halo {
+  opacity: 0.4;
+}
+
+/* One extremely subtle entrance settle — applied to the video element
+   itself (an animated ancestor would isolate the blend context), then
+   fully static. Keyframes carry only the "from" state, so reduced-
+   motion rendering matches the completed animation. The video's own
+   loop remains the section's only continuous motion layer. */
+@keyframes atlas-video-in {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .atlas-video {
+    animation: atlas-video-in 700ms var(--ease-soft) 150ms both;
+  }
+}
+
+/* ============================================================
+   §19 Why GC Dental World — "Proof, not promises" evidence
+   chapter. Team-photo reveal variant + treatment-room ghost
+   treatment + proof-row hover language.
+   ============================================================ */
+
+/* Team photograph — one-time reveal adds a gentle scale settle (.985 → 1)
+   on top of the shared reveal rise — now expressed via Reveal's `scale`
+   prop (see TrustBand); the scoped .proof-team class is retired. */
+
+/* Treatment-room ghost — the real clinical environment as a perceptible
+   environmental memory behind the evidence index. Tuned just high enough
+   to be consciously noticed as texture (previously 0.05 — invisible).
+   Grayscale + multiply keeps it strictly tonal and darker than the paper;
+   the radial mask feathers every edge so no rectangle boundary
+   can ever appear (same feathering language as .gc-pattern-fade).
+   Static by design — no motion, no parallax. */
+.proof-env {
+  opacity: 0.09;
+  filter: grayscale(1) contrast(0.92) brightness(1.06);
+  mix-blend-mode: multiply;
+  -webkit-mask-image: radial-gradient(
+    ellipse 68% 62% at 70% 38%,
+    #000 32%,
+    transparent 78%
+  );
+  mask-image: radial-gradient(
+    ellipse 68% 62% at 70% 38%,
+    #000 32%,
+    transparent 78%
+  );
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+/* Mobile: lower but still perceptible — readability always wins. */
+@media (max-width: 767px) {
+  .proof-env {
+    opacity: 0.06;
+  }
 }

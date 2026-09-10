@@ -1,6 +1,7 @@
 import Section from "@/components/ui/Section";
 import SectionLabel from "@/components/ui/SectionLabel";
 import Reveal from "@/components/ui/Reveal";
+import RevealGroup from "@/components/ui/RevealGroup";
 import RichText from "@/components/ui/RichText";
 import TopicExplorer from "@/components/interactive/TopicExplorer";
 import { topicsIntro, topics } from "@/data/topics";
@@ -58,15 +59,16 @@ export default function DentalExplained() {
 
       {/* ── Content (above ambient layer) ── */}
       <div className="relative z-10">
-        <Reveal>
-          <SectionLabel>Before any treatment, knowledge</SectionLabel>
-          <div className="mb-14 max-w-3xl">
-            <h2 id="explained-heading" className="h2-display text-gc-ink">
-              {topicsIntro.heading}
-            </h2>
-            <p className="lead measure mt-4 text-gc-ink/70"><RichText>{topicsIntro.intro}</RichText></p>
+        {/* Editorial sequencing — label → H2 → supporting copy */}
+        <RevealGroup step={90}>
+          <div>
+            <SectionLabel>Before any treatment, knowledge</SectionLabel>
           </div>
-        </Reveal>
+          <h2 id="explained-heading" className="h2-display max-w-3xl text-gc-ink">
+            {topicsIntro.heading}
+          </h2>
+          <p className="lead measure mt-4 mb-14 max-w-3xl text-gc-ink/70"><RichText>{topicsIntro.intro}</RichText></p>
+        </RevealGroup>
         <Reveal delay={100}>
           <TopicExplorer topics={topics} />
         </Reveal>

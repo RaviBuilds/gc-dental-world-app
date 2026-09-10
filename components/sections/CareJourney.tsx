@@ -1,6 +1,7 @@
 import Section from "@/components/ui/Section";
 import SectionLabel from "@/components/ui/SectionLabel";
 import Reveal from "@/components/ui/Reveal";
+import RevealGroup from "@/components/ui/RevealGroup";
 import RichText from "@/components/ui/RichText";
 import ArrowLink from "@/components/ui/ArrowLink";
 import JourneySteps from "@/components/interactive/JourneySteps";
@@ -94,14 +95,15 @@ export default function CareJourney() {
 
         {/* Concern to care — scroll-linked numbered journey (§12) */}
         <div className="mt-20 md:mt-28">
-          <Reveal>
-            <h3 className="h2-display measure-tight text-gc-ink">
-              {careJourney.journeyHeading}
-            </h3>
-            <p className="lead measure mt-4 text-gc-ink/70">
-              <RichText>{careJourney.journeyIntro}</RichText>
-            </p>
-          </Reveal>
+        {/* Editorial sequencing — journey heading settles, then its intro */}
+        <RevealGroup step={80}>
+          <h3 className="h2-display measure-tight text-gc-ink">
+            {careJourney.journeyHeading}
+          </h3>
+          <p className="lead measure mt-4 text-gc-ink/70">
+            <RichText>{careJourney.journeyIntro}</RichText>
+          </p>
+        </RevealGroup>
 
           <div className="mt-12">
             <JourneySteps steps={careJourney.steps} />

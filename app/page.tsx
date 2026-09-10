@@ -2,6 +2,7 @@ import SiteHeader from "@/components/layout/SiteHeader";
 import SiteFooter from "@/components/layout/SiteFooter";
 import FloatingContact from "@/components/layout/FloatingContact";
 import HighlightMotion from "@/components/interactive/HighlightMotion";
+import ContactDialog from "@/components/interactive/ContactDialog";
 import Hero from "@/components/sections/Hero";
 import TrustRail from "@/components/sections/TrustRail";
 import IntentNavigator from "@/components/sections/IntentNavigator";
@@ -34,6 +35,11 @@ export default function Home() {
       </a>
 
       <SiteHeader />
+
+      {/* Scroll progress — 1px GC Blue line at the very top. Pure CSS
+          scroll-linked (no JS, no scroll listeners); renders nothing at all
+          without scroll-driven-animation support or under reduced motion. */}
+      <div aria-hidden="true" className="gc-progress-bar" />
 
       <main id="main-content">
         {/* 02–03 Hero + trust rail */}
@@ -83,6 +89,8 @@ export default function Home() {
       {/* 26 Footer */}
       <SiteFooter />
       <FloatingContact />
+      {/* Mid-page consultation dialog — triggers at ~50% scroll once per session */}
+      <ContactDialog />
       {/* One-shot entrance fill for editorial highlights (client, renders null) */}
       <HighlightMotion />
     </>

@@ -25,7 +25,7 @@ export default function EducationFaq() {
           glows over the texture. */}
       <DentalIconPattern
         id="faq-dental-pattern"
-        className="absolute inset-y-0 left-0 hidden w-[58%] text-gc-ink/[0.09] lg:block"
+        className="absolute inset-y-0 left-0 hidden w-[58%] text-gc-ink/[0.14] lg:block"
       />
 
       {/* Ambient wash — tonal bloom over the pattern, house trio */}

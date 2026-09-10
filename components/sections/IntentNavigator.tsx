@@ -2,6 +2,7 @@ import Section from "@/components/ui/Section";
 import SectionLabel from "@/components/ui/SectionLabel";
 import ArrowLink from "@/components/ui/ArrowLink";
 import Reveal from "@/components/ui/Reveal";
+import RevealGroup from "@/components/ui/RevealGroup";
 import { intentSection } from "@/data/home";
 import RichText from "@/components/ui/RichText";
 
@@ -52,7 +53,9 @@ export default function IntentNavigator() {
             aria-hidden="true"
           />
 
-          <div className="relative">
+          {/* Editorial sequencing — label → heading → intro → journey cue.
+              The arch behind keeps its own settle + scroll-depth drift. */}
+          <RevealGroup className="relative" step={90}>
             <SectionLabel>Start with what you need</SectionLabel>
             <h2 id="intent-heading" className="h2-display-md text-gc-ink">
               {intentSection.heading}
@@ -75,7 +78,7 @@ export default function IntentNavigator() {
               <span className="font-normal text-gc-ink/30">→</span>
               <span>Explore</span>
             </p>
-          </div>
+          </RevealGroup>
         </div>
 
         {/* Right — the four routes */}
